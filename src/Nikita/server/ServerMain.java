@@ -1,4 +1,4 @@
-package server;
+package Nikita.server;
 
 public class ServerMain {
 

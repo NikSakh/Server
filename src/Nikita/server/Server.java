@@ -1,5 +1,7 @@
-package server;
+package Nikita.server;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
@@ -41,7 +43,15 @@ public class Server {
         receive = new Thread(new Runnable(){
             public void run(){
                 while(running){
-
+                    byte[] data = new byte[1024];
+                    DatagramPacket packet = new DatagramPacket(data, data.length);
+                    try {
+                        socket.receive(packet);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    String str = new String(packet.getData());
+                    System.out.println(str);
                 }
             }
         });
