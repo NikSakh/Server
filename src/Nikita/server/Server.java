@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Server {
 
+    private List<ServerClient> clients = new ArrayList<ServerClient>();
     private int port;
     private DatagramSocket socket;
     private Thread serverRun, manage, receive;
@@ -22,6 +25,7 @@ public class Server {
         serverRun = new Thread(new Runnable() {
             public void run(){
                 running = true;
+                System.out.println("Server started on port " + port);
                 manage();
                 receive();
             }
@@ -50,11 +54,24 @@ public class Server {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    String str = new String(packet.getData());
-                    System.out.println(str);
+                    process(packet);
+                    clients.add(new ServerClient("Nikita", packet.getAddress(), packet.getPort(), 3434));
+                    System.out.println(clients.get(0).address.toString() + ":" + clients.get(0).port);
                 }
             }
         });
         receive.start();
+    }
+
+    private void process(DatagramPacket packet){
+        String str = new String(packet.getData());
+        if(str.startsWith("/c/")) {
+            int id = UniqueID.getID();
+            clients.add(new ServerClient(str.substring(3, str.length()), packet.getAddress(), packet.getPort(), id));
+            System.out.println(id);
+            System.out.println(str.substring(3, str.length()));
+        } else {
+            System.out.println(str);
+        }
     }
 }
